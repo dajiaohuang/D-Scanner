@@ -201,22 +201,25 @@ To avoid these cases, it's possible to pass the "--skipTests" option.
 
 #### Suppressing a check on a declaration
 
-A declaration can opt out of one or more checks with a `nolint` user-defined
-attribute. For example, to keep a C binding's original name without disabling
-style checking for the rest of the file:
+A declaration can opt out of checks that support the `nolint` user-defined
+attribute. For example, to suppress a redundant-initializer warning on just one
+declaration:
 
 ```d
-extern (C)
-{
-    @("nolint(dscanner.style.phobos_naming_convention)")
-    int CRYPTO_memcmp(const(void)* first, const(void)* second, size_t count);
-}
+@("nolint(dscanner.useless-initializer)")
+int count = 0;
+int nearby = 0; // Still checked.
 ```
 
 This suppression is supported by builds that include the `nolint` feature (merged
 in [#936](https://github.com/dlang-community/D-Scanner/pull/936)); it is not
 available in the latest stable release, v0.15.2. It affects D-Scanner's check
 for the annotated declaration, unlike editor-specific ignore settings.
+
+Not every check honors declaration-level suppression. In particular, the current
+Phobos naming checker still reports C binding names such as `CRYPTO_memcmp` even
+with `@("nolint(dscanner.style.phobos_naming_convention)")` on the declaration.
+Upgrading from v0.15.2 alone does not resolve that limitation.
 
 #### Configuration
 By default all checks are enabled. Individual checks can be enabled or disabled
