@@ -199,6 +199,25 @@ it's legit to declare a variable that's not used if the goal is to verify that
 a templatized function can be instantiated by inference of the type of this variable.
 To avoid these cases, it's possible to pass the "--skipTests" option.
 
+#### Suppressing a check on a declaration
+
+A declaration can opt out of one or more checks with a `nolint` user-defined
+attribute. For example, to keep a C binding's original name without disabling
+style checking for the rest of the file:
+
+```d
+extern (C)
+{
+    @("nolint(dscanner.style.phobos_naming_convention)")
+    int CRYPTO_memcmp(const(void)* first, const(void)* second, size_t count);
+}
+```
+
+This suppression is supported by builds that include the `nolint` feature (merged
+in [#936](https://github.com/dlang-community/D-Scanner/pull/936)); it is not
+available in the latest stable release, v0.15.2. It affects D-Scanner's check
+for the annotated declaration, unlike editor-specific ignore settings.
+
 #### Configuration
 By default all checks are enabled. Individual checks can be enabled or disabled
 by using a configuration file. Such a file can be placed, for example, is the root directory of your project.
